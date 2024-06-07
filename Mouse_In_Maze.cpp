@@ -21,14 +21,14 @@
 #pragma resource "*.dfm"
 using namespace std;
 
-int m,n;   // °g®c¤j¤p
-int original_maze[50][50];   // ­ì©l°g®cªº°}¦C
-int maze[50][50];   // °g®c¸Ñµªªº°}¦C
-int sign[50][50];   // °g®c¸g¹Lªº°}¦C
+int m,n;   // è¿·å®®å¤§å°
+int original_maze[50][50];   // åŸå§‹è¿·å®®çš„é™£åˆ—
+int maze[50][50];   // è¿·å®®è§£ç­”çš„é™£åˆ—
+int sign[50][50];   // è¿·å®®ç¶“éçš„é™£åˆ—
 int top=-1;
-int p,q;   // ²{¦b¨«¨ìªº¦ì¸m
+int p,q;   // ç¾åœ¨èµ°åˆ°çš„ä½ç½®
 
-int top_move=-1;   // °Êµeªº°ïÅ|
+int top_move=-1;   // å‹•ç•«çš„å †ç–Š
 
 
 int ** generate_maze;
@@ -42,7 +42,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 }
 
-void record()   // Âk¹s¨«¹Lªº¦ì¸m
+void record()   // æ­¸é›¶èµ°éçš„ä½ç½®
 {
 	for(int x=0;x<m;x++)
 	{
@@ -54,19 +54,19 @@ void record()   // Âk¹s¨«¹Lªº¦ì¸m
     }
 }
 
-struct stack_com   // °ïÅ|°}¦C¡A¬ö¿ı¥¿½T¦ì¸mªº¶¶§Ç
+struct stack_com   // å †ç–Šé™£åˆ—ï¼Œç´€éŒ„æ­£ç¢ºä½ç½®çš„é †åº
 {
 	int column,row,orientation;
 };
 stack_com stack[1500];
 
-struct act   // animationªº°ïÅ|
+struct act   // animationçš„å †ç–Š
 {
 	int v,r;
 };
 act moving[1500][2];
 
-void clean_stack()   // ­n²MªÅ°ïÅ|¤¤ªº¤º®e¡I¡I¡I
+void clean_stack()   // è¦æ¸…ç©ºå †ç–Šä¸­çš„å…§å®¹ï¼ï¼ï¼
 {
 	while(top!=-1)
 	{
@@ -83,7 +83,7 @@ void clean_stack()   // ­n²MªÅ°ïÅ|¤¤ªº¤º®e¡I¡I¡I
 	}
 }
 
-struct direction   // ²¾°Êªº¤è¦V
+struct direction   // ç§»å‹•çš„æ–¹å‘
 {
 	int x,y;
 };
@@ -91,87 +91,87 @@ direction dir[4];
 
 void push(int a,int b,int c)
 {
-	stack[++top].column=a;   // ¤£¯à++top¤T¦¸¡A·|ÅÜtop=top+3
+	stack[++top].column=a;   // ä¸èƒ½++topä¸‰æ¬¡ï¼Œæœƒè®Štop=top+3
 	stack[top].row=b;
 	stack[top].orientation=c;
 	Form1->Memo1->Lines->Add("Push: "+IntToStr(a)+" "+IntToStr(b)+" "+IntToStr(c));
-	Form1->Memo1->Refresh();   // debug¥Î
+	Form1->Memo1->Refresh();   // debugç”¨
 }
 
 void pop()
 {
-	int temp;   // ¦L¥X¤è¦V
+	int temp;   // å°å‡ºæ–¹å‘
 	maze[p][q]=0;
 	p=stack[top].column;
 	q=stack[top].row;
 	temp=stack[top].orientation;
     top--;
 	Form1->Memo1->Lines->Add("Pop: "+IntToStr(p)+" "+IntToStr(q)+" "+IntToStr(temp));
-	Form1->Memo1->Refresh();   // debug¥Î
+	Form1->Memo1->Refresh();   // debugç”¨
 }
 
 void run()   // main funtion
 {
-	dir[0].x=0; dir[0].y=1;   // dir[0] -> ©¹¥k
-	dir[1].x=1; dir[1].y=0;   // dir[1] -> ©¹¤U
-	dir[2].x=0; dir[2].y=-1;   // dir[2] -> ©¹¥ª
-	dir[3].x=-1; dir[3].y=0;   // dir[3] -> ©¹¤W
+	dir[0].x=0; dir[0].y=1;   // dir[0] -> å¾€å³
+	dir[1].x=1; dir[1].y=0;   // dir[1] -> å¾€ä¸‹
+	dir[2].x=0; dir[2].y=-1;   // dir[2] -> å¾€å·¦
+	dir[3].x=-1; dir[3].y=0;   // dir[3] -> å¾€ä¸Š
 
-	int count=0;   // ¨C¨Bªº¤è¦V
-	while(p!=(m-2) || q!=(n-1))   // ¨ì²×ÂI«e(²×¤î±ø¥óªºwhile¤£¯à¦Arun¥~­±¡A³o¼Ë¨ì²×ÂI³£¤£·|°±¤î)
+	int count=0;   // æ¯æ­¥çš„æ–¹å‘
+	while(p!=(m-2) || q!=(n-1))   // åˆ°çµ‚é»å‰(çµ‚æ­¢æ¢ä»¶çš„whileä¸èƒ½å†runå¤–é¢ï¼Œé€™æ¨£åˆ°çµ‚é»éƒ½ä¸æœƒåœæ­¢)
 	{
-		if(sign[p+dir[count].x][q+dir[count].y]==0)   // §ä¨S¨«¹Lªº¸ô
+		if(sign[p+dir[count].x][q+dir[count].y]==0)   // æ‰¾æ²’èµ°éçš„è·¯
 		{
 			push(p,q,count);
 			p=p+dir[count].x;
 			q=q+dir[count].y;
-			sign[p][q]=3;   // ¬ö¿ı¤w¸g¨«¹L
-			moving[++top_move][1].v=p;   // animationªº°ïÅ|
+			sign[p][q]=3;   // ç´€éŒ„å·²ç¶“èµ°é
+			moving[++top_move][1].v=p;   // animationçš„å †ç–Š
 			moving[top_move][1].r=q;
 			maze[p][q]=3;
-			count=0;   // ¤è¦V­nÂk¹s¡A¸Õ¤U¦¸ªº¤è¦V¤~·|±q­ì¤è¦V¶}©l
+			count=0;   // æ–¹å‘è¦æ­¸é›¶ï¼Œè©¦ä¸‹æ¬¡çš„æ–¹å‘æ‰æœƒå¾åŸæ–¹å‘é–‹å§‹
 		}
 		else count++;
 
-		if(count>=4)   // ¥|­Ó¤è¦V³£¦æ¤£³q
+		if(count>=4)   // å››å€‹æ–¹å‘éƒ½è¡Œä¸é€š
 		{
-			moving[++top_move][2].v=p;   // animationªº°ïÅ|
+			moving[++top_move][2].v=p;   // animationçš„å †ç–Š
 			moving[top_move][2].r=q;
 			pop();
-			count=0;   // ¤è¦V­nÂk¹s¡A¸Õ¤U¦¸ªº¤è¦V¤~·|±q­ì¤è¦V¶}©l
+			count=0;   // æ–¹å‘è¦æ­¸é›¶ï¼Œè©¦ä¸‹æ¬¡çš„æ–¹å‘æ‰æœƒå¾åŸæ–¹å‘é–‹å§‹
 		}
 	}
 
 }
 
 
-// ¥H¤U¬° Generate Maze
+// ä»¥ä¸‹ç‚º Generate Maze
 int ** generate(int ** generate_maze,int x,int y)
 {
 	int direction;
-	generate_maze[x][y] =0; // ¼Ğ¥Ü¦¹®æ¤w³]©w
+	generate_maze[x][y] =0; // æ¨™ç¤ºæ­¤æ ¼å·²è¨­å®š
    // Form1->Memo2->Lines->Add("(x,y,dir)="+IntToStr(x)+","+IntToStr(y)+","+IntToStr(direction));
-	while((y+2<n && generate_maze[x][y+2]==1) || (x+2<m && generate_maze[x+2][y]==1) || (y-2>0 && generate_maze[x][y-2]==1) || (x-2>0 && generate_maze[x-2][y]==1)) // ¦pªG¤£¬O¥~Àğ
+	while((y+2<n && generate_maze[x][y+2]==1) || (x+2<m && generate_maze[x+2][y]==1) || (y-2>0 && generate_maze[x][y-2]==1) || (x-2>0 && generate_maze[x-2][y]==1)) // å¦‚æœä¸æ˜¯å¤–ç‰†
 	{
-		direction = rand()%4+1; // ¨M©w¤U¤@­Ó¦ì¸m
-		if(direction==1 && y+2 < n && generate_maze[x][y+2]==1) // ¦V¥k¨«
+		direction = rand()%4+1; // æ±ºå®šä¸‹ä¸€å€‹ä½ç½®
+		if(direction==1 && y+2 < n && generate_maze[x][y+2]==1) // å‘å³èµ°
 		{
-			generate_maze[x][y+1] =0; // ©î±¼¥kÀğ
+			generate_maze[x][y+1] =0; // æ‹†æ‰å³ç‰†
 			generate_maze = generate(generate_maze, x,y+2);
 		}
-		else if(direction==2 && x-2>0 && generate_maze[x-2][y]==1) // ¦V¤W¨«
+		else if(direction==2 && x-2>0 && generate_maze[x-2][y]==1) // å‘ä¸Šèµ°
 		{
-			generate_maze[x-1][y] =0; // ©î±¼¤WÀğ
+			generate_maze[x-1][y] =0; // æ‹†æ‰ä¸Šç‰†
 			generate_maze = generate(generate_maze, x-2,y);
 		}
-		else if(direction==3 && y-2 > 0 && generate_maze[x][y-2]==1) // ¦V¥ª¨«
+		else if(direction==3 && y-2 > 0 && generate_maze[x][y-2]==1) // å‘å·¦èµ°
 		{
-			generate_maze[x][y-1] =0; // ©î±¼¥kÀğ
+			generate_maze[x][y-1] =0; // æ‹†æ‰å³ç‰†
 			generate_maze = generate(generate_maze, x,y-2);
 		}
-		else if(direction==4 && x+2 < m && generate_maze[x+2][y]==1) // ¦V¤U¨«
+		else if(direction==4 && x+2 < m && generate_maze[x+2][y]==1) // å‘ä¸‹èµ°
 		{
-			generate_maze[x+1][y] =0; // ©î±¼¤WÀğ
+			generate_maze[x+1][y] =0; // æ‹†æ‰ä¸Šç‰†
 			generate_maze = generate(generate_maze, x+2,y);
 		}
 	}
@@ -183,7 +183,7 @@ int ** generate(int ** generate_maze,int x,int y)
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
 	// Load Maze
-	StringGrid1->Visible=1;   // ¦³°g®c¦AÅã¥ÜStringGrid
+	StringGrid1->Visible=1;   // æœ‰è¿·å®®å†é¡¯ç¤ºStringGrid
 	StringGrid2->Visible=1;
 	StringGrid3->Visible=1;
 
@@ -193,9 +193,9 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 	if(OpenDialog1->Execute())
 	{
 		infile = OpenDialog1->FileName;
-		fp = fopen(infile.c_str(), "r+");   //c_str¨ç?ªº¶Ç¦^­È¬O const char *, §Y§âAnsiStringÂà¦¨const char *µ¹fopen¨Ï¥Î
+		fp = fopen(infile.c_str(), "r+");   //c_strå‡½?çš„å‚³å›å€¼æ˜¯ const char *, å³æŠŠAnsiStringè½‰æˆconst char *çµ¦fopenä½¿ç”¨
 		fscanf(fp, "%d %d", &m, &n);    // Read in two integers m & n
-		Memo1->Lines->Add("Column¡G"+IntToStr(m)+"   Row¡G"+IntToStr(n));
+		Memo1->Lines->Add("Columnï¼š"+IntToStr(m)+"   Rowï¼š"+IntToStr(n));
 		Memo1->Lines->Add("---------- Original Maze ----------");
 		for(int x=0;x<m;x++)   // Reda in m*n 0/1/2's into maze[][]
 		{
@@ -229,7 +229,7 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 	}
 
 
-    int grid_size = Edit3->Text.ToInt();   // StringGrid®æ¤lªº¤j¤p
+    int grid_size = Edit3->Text.ToInt();   // StringGridæ ¼å­çš„å¤§å°
 	for(int i=0; i<m; i++) StringGrid1->RowHeights[i] = grid_size;
 	for(int i=0; i<n; i++) StringGrid1->ColWidths[i] = grid_size;
 	for(int i=0; i<m; i++) StringGrid2->RowHeights[i] = grid_size;
@@ -240,24 +240,24 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 	StringGrid2->Refresh();
 	StringGrid3->Refresh();
 
-	Button4->Visible=1;   // ²£¥Í°g®c«áÅã¥ÜButton"Find A Tour"
+	Button4->Visible=1;   // ç”¢ç”Ÿè¿·å®®å¾Œé¡¯ç¤ºButton"Find A Tour"
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
 	// Generate Maze
-	if(Edit1->Text.ToInt()>50 || Edit2->Text.ToInt()>50)   // ½T«O¿é¤J°g®c¤j¤p¤£·|¹L¤j¡A³y¦¨«áÄòµLªk¾Ş§@
+	if(Edit1->Text.ToInt()>50 || Edit2->Text.ToInt()>50)   // ç¢ºä¿è¼¸å…¥è¿·å®®å¤§å°ä¸æœƒéå¤§ï¼Œé€ æˆå¾ŒçºŒç„¡æ³•æ“ä½œ
 	{
 		ShowMessage("The Maze Should Be Smaller Than 50*50");
 	}
 	else
 	{
-		StringGrid1->Visible=1;   // ¦³°g®c¦AÅã¥ÜStringGrid
+		StringGrid1->Visible=1;   // æœ‰è¿·å®®å†é¡¯ç¤ºStringGrid
 		StringGrid2->Visible=1;
 		StringGrid3->Visible=1;
 
-		int grid_size = Edit3->Text.ToInt();   // StringGrid®æ¤lªº¤j¤p
+		int grid_size = Edit3->Text.ToInt();   // StringGridæ ¼å­çš„å¤§å°
 		for(int i=0; i<m; i++) StringGrid1->RowHeights[i] = grid_size;
 		for(int i=0; i<n; i++) StringGrid1->ColWidths[i] = grid_size;
 		for(int i=0; i<m; i++) StringGrid2->RowHeights[i] = grid_size;
@@ -285,21 +285,21 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 		{
 			for (int y=0; y<n; y++)
 			{
-				if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // ³]©w¥~Àğ
-				else new_maze[x][y] = 1; // ªì©l°g®c¤º³¡
+				if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // è¨­å®šå¤–ç‰†
+				else new_maze[x][y] = 1; // åˆå§‹è¿·å®®å…§éƒ¨
 			}
 		}
-		new_maze = generate(new_maze, End_i, End_j); // ²£¥Í°g®c
-		new_maze[Start_i][Start_j-1] =0; // ©î±¼¤J¤f¥ªÀğ
-		new_maze[End_i][End_j+1] =0; // ©î±¼¥X¤f¥kÀğ
+		new_maze = generate(new_maze, End_i, End_j); // ç”¢ç”Ÿè¿·å®®
+		new_maze[Start_i][Start_j-1] =0; // æ‹†æ‰å…¥å£å·¦ç‰†
+		new_maze[End_i][End_j+1] =0; // æ‹†æ‰å‡ºå£å³ç‰†
 
 		for(int a=0;a<m;a++)
 		{
 			for(int b=0;b<n;b++) original_maze[a][b]=new_maze[a][b];
 		}
-		original_maze[1][0]=3;   // °_ÂI¤]­nºâ¨«¹L
-		original_maze[1][1]=0;   // °¸¼Æªºmaze¥X¤f·|³QÀğ¾×¦í
-		if(m%2==0 && n%2==0) original_maze[2][1]=0;   // ­Y¦æ¦C³£¬°°¸¼ÆÁÙ­n¦h¶}¤@®æÀğ¾À
+		original_maze[1][0]=3;   // èµ·é»ä¹Ÿè¦ç®—èµ°é
+		original_maze[1][1]=0;   // å¶æ•¸çš„mazeå‡ºå£æœƒè¢«ç‰†æ“‹ä½
+		if(m%2==0 && n%2==0) original_maze[2][1]=0;   // è‹¥è¡Œåˆ—éƒ½ç‚ºå¶æ•¸é‚„è¦å¤šé–‹ä¸€æ ¼ç‰†å£
 
 		StringGrid1->RowCount = m;
 		StringGrid1->ColCount = n;
@@ -315,7 +315,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 				StringGrid3->Cells[j][i] = original_maze[i][j];
 			}
 
-		Button4->Visible=1;   // ²£¥Í°g®c«áÅã¥ÜButton"Find A Tour"
+		Button4->Visible=1;   // ç”¢ç”Ÿè¿·å®®å¾Œé¡¯ç¤ºButton"Find A Tour"
 	}
 }
 
@@ -326,11 +326,11 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
 	// Find a Tour
-	p=1; q=0;   // ±q(1,0)¶}©l¨«
-	top=-1;     // topÂk¹s(-1)
-	record();   // Âk¹s¨«¹Lªº¦ì¸m
-	clean_stack();   // ­n²MªÅ°ïÅ|¤¤ªº¤º®e¡I¡I¡I
-	run();   // ¶}©l¨«°g®c
+	p=1; q=0;   // å¾(1,0)é–‹å§‹èµ°
+	top=-1;     // topæ­¸é›¶(-1)
+	record();   // æ­¸é›¶èµ°éçš„ä½ç½®
+	clean_stack();   // è¦æ¸…ç©ºå †ç–Šä¸­çš„å…§å®¹ï¼ï¼ï¼
+	run();   // é–‹å§‹èµ°è¿·å®®
 	StringGrid1->RowCount=m;   // Print out sign[][] in StringGrid1
 	StringGrid1->ColCount=n;
 	StringGrid2->RowCount=m;   // Print out original_maze[][] in StringGrid1
@@ -348,17 +348,17 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 		Memo1->Lines->Add(out);
 	}
 
-	for(int x=0;x<m;x++)   // ¦L¥X§¹¾ã¨«§¹ªº°g®c
+	for(int x=0;x<m;x++)   // å°å‡ºå®Œæ•´èµ°å®Œçš„è¿·å®®
 	{
 		for(int y=0;y<n;y++) StringGrid2->Cells[y][x] = maze[x][y];
 	}
 
-    for(int x=0;x<m;x++)   // ¦L¥X¨«¹Lªº¸ô®|
+    for(int x=0;x<m;x++)   // å°å‡ºèµ°éçš„è·¯å¾‘
 	{
 		for(int y=0;y<n;y++) StringGrid1->Cells[y][x] = sign[x][y];
 	}
 
-	Button6->Visible=1;   // ¶]§¹°g®c«áÅã¥ÜButton"Cool Animation"
+	Button6->Visible=1;   // è·‘å®Œè¿·å®®å¾Œé¡¯ç¤ºButton"Cool Animation"
 }
 //---------------------------------------------------------------------------
 
@@ -408,7 +408,7 @@ void __fastcall TForm1::StringGrid1DrawCell(TObject *Sender, int ACol, int ARow,
 
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
-	Form1->Memo1->Lines->Clear();   // ²M°£Memo¸Ì­±ªº¤º®e
+	Form1->Memo1->Lines->Clear();   // æ¸…é™¤Memoè£¡é¢çš„å…§å®¹
 }
 //---------------------------------------------------------------------------
 
@@ -416,7 +416,7 @@ void __fastcall TForm1::Button6Click(TObject *Sender)
 {
 	// Cool Animation
 	int a,b;
-	for(int x=0;x<m;x++)   // ­«·s¶}©l«e²MªÅ¤W¤@¦¸¶]¹Lªº²ª¸ñ
+	for(int x=0;x<m;x++)   // é‡æ–°é–‹å§‹å‰æ¸…ç©ºä¸Šä¸€æ¬¡è·‘éçš„ç—•è·¡
 	{
 		for(int y=0;y<n;y++)
 		{
@@ -427,7 +427,7 @@ void __fastcall TForm1::Button6Click(TObject *Sender)
 		}
 	}
 
-    StringGrid3->Cells[0][1]=3;   // ¦]¬°stack·|§â²Ä¤@®æÅÜ1¡A©Ò¥H¥ı³]©w¬°3¡A¶]°_¨ÓÃC¦â¸û¬üÆ[
+    StringGrid3->Cells[0][1]=3;   // å› ç‚ºstackæœƒæŠŠç¬¬ä¸€æ ¼è®Š1ï¼Œæ‰€ä»¥å…ˆè¨­å®šç‚º3ï¼Œè·‘èµ·ä¾†é¡è‰²è¼ƒç¾è§€
 	for(int i=0;i<=top_move;i++)
 	{
 		Sleep(TrackBar1->Position*100);
@@ -446,10 +446,10 @@ void __fastcall TForm1::Button6Click(TObject *Sender)
 			StringGrid3->Refresh();
 		}
 	}
-	StringGrid3->Cells[n-1][m-2]=3;   // ¥Ñ©óstack¨ì²×ÂI´N¥ß¨è°±¤î¤F¡A¬°¤F¶]°_¨ÓÃC¦â¸û¬üÆ[¡A³]©w¬°3
+	StringGrid3->Cells[n-1][m-2]=3;   // ç”±æ–¼stackåˆ°çµ‚é»å°±ç«‹åˆ»åœæ­¢äº†ï¼Œç‚ºäº†è·‘èµ·ä¾†é¡è‰²è¼ƒç¾è§€ï¼Œè¨­å®šç‚º3
 	StringGrid3->Refresh();
-    ShowMessage("­Y­n¦A¬İ¤@¦¸°Êµe¡A½Ğ¦A«ö¤@¦¸Find a Tour");
-	clean_stack();   // ­n²MªÅ°ïÅ|¤¤ªº¤º®e¡I¡I¡I
+    ShowMessage("è‹¥è¦å†çœ‹ä¸€æ¬¡å‹•ç•«ï¼Œè«‹å†æŒ‰ä¸€æ¬¡Find a Tour");
+	clean_stack();   // è¦æ¸…ç©ºå †ç–Šä¸­çš„å…§å®¹ï¼ï¼ï¼
 
 }
 //---------------------------------------------------------------------------
@@ -462,7 +462,7 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
 	StringGrid4->Visible=1;
     m=Edit1->Text.ToInt();
 	n=Edit2->Text.ToInt();
-	p=m-2; q=n-1;   // ¬°¤F¶i¤Jwhile°j°é
+	p=m-2; q=n-1;   // ç‚ºäº†é€²å…¥whileè¿´åœˆ
 
 	// Generate Maze
 	p=1; q=0;
@@ -492,21 +492,21 @@ void __fastcall TForm1::Button5Click(TObject *Sender)
 			{
 				for (int y=0; y<n; y++)
 				{
-					if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // ³]©w¥~Àğ
-					else new_maze[x][y] = 1; // ªì©l°g®c¤º³¡
+					if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // è¨­å®šå¤–ç‰†
+					else new_maze[x][y] = 1; // åˆå§‹è¿·å®®å…§éƒ¨
 				}
 			}
-			new_maze = generate(new_maze, End_i, End_j); // ²£¥Í°g®c
-			new_maze[Start_i][Start_j-1] =0; // ©î±¼¤J¤f¥ªÀğ
-			new_maze[End_i][End_j+1] =0; // ©î±¼¥X¤f¥kÀğ
+			new_maze = generate(new_maze, End_i, End_j); // ç”¢ç”Ÿè¿·å®®
+			new_maze[Start_i][Start_j-1] =0; // æ‹†æ‰å…¥å£å·¦ç‰†
+			new_maze[End_i][End_j+1] =0; // æ‹†æ‰å‡ºå£å³ç‰†
 
 			for(int a=0;a<m;a++)
 			{
 				for(int b=0;b<n;b++) original_maze[a][b]=new_maze[a][b];
 			}
-			original_maze[1][0]=3;   // ¬üÆ[
-			original_maze[1][1]=0;   // °¸¼Æªºmaze¥X¤f·|³QÀğ¾×¦í
-			if(m%2==0 && n%2==0) original_maze[2][1]=0;   // ­Y¦æ¦C³£¬°°¸¼ÆÁÙ­n¦h¶}¤@®æÀğ¾À
+			original_maze[1][0]=3;   // ç¾è§€
+			original_maze[1][1]=0;   // å¶æ•¸çš„mazeå‡ºå£æœƒè¢«ç‰†æ“‹ä½
+			if(m%2==0 && n%2==0) original_maze[2][1]=0;   // è‹¥è¡Œåˆ—éƒ½ç‚ºå¶æ•¸é‚„è¦å¤šé–‹ä¸€æ ¼ç‰†å£
 
 			StringGrid4->RowCount = m;
 			StringGrid4->ColCount = n;
@@ -537,7 +537,7 @@ void __fastcall TForm1::StringGrid4KeyPress(TObject *Sender, System::WideChar &K
 				StringGrid4->Cells[q][p] = original_maze[p][q];
 			}
 
-			if(p==m-2 && q==n-1)   // ¨ì²×ÂI­n´«·sªº°g®c­«·s
+			if(p==m-2 && q==n-1)   // åˆ°çµ‚é»è¦æ›æ–°çš„è¿·å®®é‡æ–°
 			{
             	p=1; q=0;
 				int ** new_maze;
@@ -556,21 +556,21 @@ void __fastcall TForm1::StringGrid4KeyPress(TObject *Sender, System::WideChar &K
 				{
 					for (int y=0; y<n; y++)
 					{
-						if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // ³]©w¥~Àğ
-						else new_maze[x][y] = 1; // ªì©l°g®c¤º³¡
+						if (x==0 || y==0 || x==m-1 || y==n-1 ) new_maze[x][y] = 2; // è¨­å®šå¤–ç‰†
+						else new_maze[x][y] = 1; // åˆå§‹è¿·å®®å…§éƒ¨
 					}
 				}
-				new_maze = generate(new_maze, End_i, End_j); // ²£¥Í°g®c
-				new_maze[Start_i][Start_j-1] =0; // ©î±¼¤J¤f¥ªÀğ
-				new_maze[End_i][End_j+1] =0; // ©î±¼¥X¤f¥kÀğ
+				new_maze = generate(new_maze, End_i, End_j); // ç”¢ç”Ÿè¿·å®®
+				new_maze[Start_i][Start_j-1] =0; // æ‹†æ‰å…¥å£å·¦ç‰†
+				new_maze[End_i][End_j+1] =0; // æ‹†æ‰å‡ºå£å³ç‰†
 
 				for(int a=0;a<m;a++)
 				{
 					for(int b=0;b<n;b++) original_maze[a][b]=new_maze[a][b];
 				}
-				original_maze[1][0]=3;   // ¬üÆ[
-				original_maze[1][1]=0;   // °¸¼Æªºmaze¥X¤f·|³QÀğ¾×¦í
-				if(m%2==0 && n%2==0) original_maze[2][1]=0;   // ­Y¦æ¦C³£¬°°¸¼ÆÁÙ­n¦h¶}¤@®æÀğ¾À
+				original_maze[1][0]=3;   // ç¾è§€
+				original_maze[1][1]=0;   // å¶æ•¸çš„mazeå‡ºå£æœƒè¢«ç‰†æ“‹ä½
+				if(m%2==0 && n%2==0) original_maze[2][1]=0;   // è‹¥è¡Œåˆ—éƒ½ç‚ºå¶æ•¸é‚„è¦å¤šé–‹ä¸€æ ¼ç‰†å£
 				for(int a=0;a<m;a++)
 				{
 					for(int b=0;b<n;b++) StringGrid4->Cells[b][a] = original_maze[a][b];
@@ -603,7 +603,7 @@ void __fastcall TForm1::StringGrid4KeyPress(TObject *Sender, System::WideChar &K
 				}
 				StringGrid4->Refresh();
 			}
-            else ShowMessage("You cannot go back¡I");
+            else ShowMessage("You cannot go backï¼");
 			break;
 		case  'w':
 			if(original_maze[p-1][q]==0)
